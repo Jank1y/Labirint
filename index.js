@@ -40,14 +40,17 @@ if (!svgElement) {
     polyline.style.strokeDasharray = pathLength;
     polyline.style.strokeDashoffset = pathLength;
 
-    const character = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    character.setAttribute('r', 10); // Radius of the character
-    character.setAttribute('fill', 'red');
+    // Create an <image> element to replace the circle
+    const character = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+    character.setAttributeNS(null, 'href', 'Slike/truck-front.png'); // Replace with your icon's file path
+    character.setAttribute('width', 24); // Adjust icon size
+    character.setAttribute('height', 24); // Adjust icon size
     svgElement.appendChild(character);
 
+    // Position the icon at the start of the polyline
     const startPoint = polyline.getPointAtLength(0);
-    character.setAttribute('cx', startPoint.x);
-    character.setAttribute('cy', startPoint.y);
+    character.setAttribute('x', startPoint.x - 10); // Offset by half icon width
+    character.setAttribute('y', startPoint.y - 10); // Offset by half icon height
 
     const animateButton = document.getElementById('animateButton');
     if (animateButton) {
@@ -59,7 +62,7 @@ if (!svgElement) {
                 if (!startTime) startTime = timestamp;
                 const elapsed = timestamp - startTime;
 
-                const progress = Math.min(elapsed / 20000, 1); // Duration of 20s
+                const progress = Math.min(elapsed / 60000, 1); // Duration of 20s
                 const currentLength = pathLength * progress;
 
                 // Update the dash offset to create a disappearing trail
@@ -67,8 +70,8 @@ if (!svgElement) {
 
                 // Get the current position on the polyline
                 const point = polyline.getPointAtLength(currentLength);
-                character.setAttribute('cx', point.x);
-                character.setAttribute('cy', point.y);
+                character.setAttribute('x', point.x - 10); // Adjust icon position
+                character.setAttribute('y', point.y - 10); // Adjust icon position
 
                 if (progress < 1) {
                     requestAnimationFrame(animateCharacter);
@@ -86,8 +89,8 @@ if (!svgElement) {
             polyline.style.transition = 'none';
             polyline.style.strokeDashoffset = pathLength;
 
-            character.setAttribute('cx', startPoint.x);
-            character.setAttribute('cy', startPoint.y);
+            character.setAttribute('x', startPoint.x - 10);
+            character.setAttribute('y', startPoint.y - 10);
         });
     } else {
         console.error('Erase button with ID "eraseButton" not found.');
