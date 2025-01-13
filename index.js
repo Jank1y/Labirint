@@ -73,7 +73,7 @@ if (!svgElement) {
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
 
-        const progress = Math.min(elapsed / 60000, 1); // Duration of 20s
+        const progress = Math.min(elapsed / 30000, 1); // Duration of 20s
         const currentLength = pathLength * progress;
 
         // Update the dash offset to create a disappearing trail
