@@ -1,14 +1,22 @@
-function drawPolyline(svgElement, points, strokeColor = 'orange', strokeWidth = 7) {
-    const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    polyline.setAttribute('fill', 'none');
-    polyline.setAttribute('stroke', strokeColor);
-    polyline.setAttribute('stroke-width', strokeWidth);
-    polyline.setAttribute('stroke-linecap', 'square');
-    polyline.setAttribute('stroke-linejoin', 'round');
-    polyline.setAttribute('points', points);
-    polyline.setAttribute('class', 'line'); // Add class for animation
-    svgElement.appendChild(polyline);
-    return polyline;
+function drawPolyline(
+  svgElement,
+  points,
+  strokeColor = "orange",
+  strokeWidth = 7
+) {
+  const polyline = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "polyline"
+  );
+  polyline.setAttribute("fill", "none");
+  polyline.setAttribute("stroke", strokeColor);
+  polyline.setAttribute("stroke-width", strokeWidth);
+  polyline.setAttribute("stroke-linecap", "square");
+  polyline.setAttribute("stroke-linejoin", "round");
+  polyline.setAttribute("points", points);
+  polyline.setAttribute("class", "line"); // Add class for animation
+  svgElement.appendChild(polyline);
+  return polyline;
 }
 
 // Define the polyline points
@@ -28,71 +36,91 @@ const polylinePoints = `
 `;
 
 // Get the SVG element
-const svgElement = document.getElementById('mazeSvg');
+const svgElement = document.getElementById("mazeSvg");
 
 // Check if the SVG element exists
 if (!svgElement) {
-    console.error('SVG element with ID "mazeSvg" not found.');
+  console.error('SVG element with ID "mazeSvg" not found.');
 } else {
-    const polyline = drawPolyline(svgElement, polylinePoints);
+  const polyline = drawPolyline(svgElement, polylinePoints);
 
-    const pathLength = polyline.getTotalLength();
-    polyline.style.strokeDasharray = pathLength;
-    polyline.style.strokeDashoffset = pathLength;
+  const pathLength = polyline.getTotalLength();
+  polyline.style.strokeDasharray = pathLength;
+  polyline.style.strokeDashoffset = pathLength;
 
-    // Create an <image> element to replace the circle
-    const character = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-    character.setAttributeNS(null, 'href', 'Slike/truck-front.png'); // Replace with your icon's file path
-    character.setAttribute('width', 24); // Adjust icon size
-    character.setAttribute('height', 24); // Adjust icon size
-    svgElement.appendChild(character);
+  // Create an <image> element to replace the circle
+  const character = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "image"
+  );
+  character.setAttributeNS(null, "href", "Slike/truck-front.png"); // Default icon
+  character.setAttribute("width", 24); // Adjust icon size
+  character.setAttribute("height", 24); // Adjust icon size
+  svgElement.appendChild(character);
 
-    // Position the icon at the start of the polyline
-    const startPoint = polyline.getPointAtLength(0);
-    character.setAttribute('x', startPoint.x - 10); // Offset by half icon width
-    character.setAttribute('y', startPoint.y - 10); // Offset by half icon height
+  // Position the icon at the start of the polyline
+  const startPoint = polyline.getPointAtLength(0);
+  character.setAttribute("x", startPoint.x - 12); // Offset by half icon width
+  character.setAttribute("y", startPoint.y - 12); // Offset by half icon height
 
-    const animateButton = document.getElementById('animateButton');
-    if (animateButton) {
-        animateButton.addEventListener('click', () => {
-            polyline.style.transition = 'none'; // Disable transition for dynamic updates
+  const animateButton = document.getElementById("animateButton");
+  if (animateButton) {
+    animateButton.addEventListener("click", () => {
+      polyline.style.transition = "none"; // Disable transition for dynamic updates
 
-            let startTime;
-            function animateCharacter(timestamp) {
-                if (!startTime) startTime = timestamp;
-                const elapsed = timestamp - startTime;
+      let startTime;
+      function animateCharacter(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
 
-                const progress = Math.min(elapsed / 60000, 1); // Duration of 20s
-                const currentLength = pathLength * progress;
+        const progress = Math.min(elapsed / 60000, 1); // Duration of 20s
+        const currentLength = pathLength * progress;
 
-                // Update the dash offset to create a disappearing trail
-                polyline.style.strokeDashoffset = pathLength - currentLength;
+        // Update the dash offset to create a disappearing trail
+        polyline.style.strokeDashoffset = pathLength - currentLength;
 
-                // Get the current position on the polyline
-                const point = polyline.getPointAtLength(currentLength);
-                character.setAttribute('x', point.x - 10); // Adjust icon position
-                character.setAttribute('y', point.y - 10); // Adjust icon position
+        // Get the current position and direction on the polyline
+        const point = polyline.getPointAtLength(currentLength);
+        const nextPoint = polyline.getPointAtLength(currentLength + 1);
 
-                if (progress < 1) {
-                    requestAnimationFrame(animateCharacter);
-                }
-            }
-            requestAnimationFrame(animateCharacter);
-        });
-    } else {
-        console.error('Animate button with ID "animateButton" not found.');
-    }
+        character.setAttribute("x", point.x - 12); // Adjust icon position
+        character.setAttribute("y", point.y - 12); // Adjust icon position
 
-    const eraseButton = document.getElementById('eraseButton');
-    if (eraseButton) {
-        eraseButton.addEventListener('click', () => {
-            polyline.style.transition = 'none';
-            polyline.style.strokeDashoffset = pathLength;
+        // Determine direction and switch icon
+        if (nextPoint) {
+          const dx = nextPoint.x - point.x;
+          const dy = nextPoint.y - point.y;
 
-            character.setAttribute('x', startPoint.x - 10);
-            character.setAttribute('y', startPoint.y - 10);
-        });
-    } else {
-        console.error('Erase button with ID "eraseButton" not found.');
-    }
+          if (Math.abs(dx) > Math.abs(dy)) {
+            // Moving horizontally
+            character.setAttributeNS(null, "href", "Slike/truck-side.png");
+          } else {
+            // Moving vertically
+            character.setAttributeNS(null, "href", "Slike/truck-front.png");
+          }
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(animateCharacter);
+        }
+      }
+      requestAnimationFrame(animateCharacter);
+    });
+  } else {
+    console.error('Animate button with ID "animateButton" not found.');
+  }
+
+  const eraseButton = document.getElementById("eraseButton");
+  if (eraseButton) {
+    eraseButton.addEventListener("click", () => {
+      polyline.style.transition = "none";
+      polyline.style.strokeDashoffset = pathLength;
+
+      character.setAttribute("x", startPoint.x - 12);
+      character.setAttribute("y", startPoint.y - 12);
+      character.setAttributeNS(null, "href", "Slike/truck-front.png"); // Reset to default icon
+    });
+  } else {
+    console.error('Erase button with ID "eraseButton" not found.');
+  }
 }

@@ -1,50 +1,122 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 html,
 body {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .main {
-    background: url(Slike/background.webp) no-repeat center center;
-    background-size: cover;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  background: url(Slike/background.webp) no-repeat center center;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .nav {
-    width: 485px;
-    height: 30px;
-    background: black;
+  width: 485px;
+  height: 30px;
+  background: black;
 }
 
 .labirint {
-    background: white;
-    display: flex;
+  background: white;
+  display: flex;
 }
 .fire img {
-    width: 350px;
-    height: 250px;
+  width: 350px;
+  height: 250px;
+}
+/* CSS */
+#animateButton {
+  background: #ff4742;
+  border: 1px solid #ff4742;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: nunito, roboto, proxima-nova, "proxima nova", sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 16px;
+  min-height: 40px;
+  outline: 0;
+  padding: 12px 14px;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+}
+
+#animateButton:hover,
+#animateButton:active {
+  background-color: initial;
+  background-position: 0 0;
+  color: #ff4742;
+}
+
+#animateButton:active {
+  opacity: 0.5;
+}
+/* CSS */
+#eraseButton {
+  background: #ff4742;
+  border: 1px solid #ff4742;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: nunito, roboto, proxima-nova, "proxima nova", sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 16px;
+  min-height: 40px;
+  outline: 0;
+  margin-top: 5px;
+  padding: 12px 14px;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+}
+
+#eraseButton:hover,
+#eraseButton:active {
+  background-color: initial;
+  background-position: 0 0;
+  color: #ff4742;
+}
+
+#eraseButton:active {
+  opacity: 0.5;
 }
 
 @media (max-width: 600px) {
-    .labirint {
-        scale: 0.6;
-    }
-    .nav {
-        width: 300px;
-    }
-    .fire img {
-        scale: 0.6;
-        
-    }
+  .labirint {
+    scale: 0.6;
+  }
+  .nav {
+    width: 300px;
+  }
+  .fire img {
+    scale: 0.6;
+  }
 }
