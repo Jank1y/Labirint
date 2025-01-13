@@ -43,4 +43,8 @@ body {
     .nav {
         width: 300px;
     }
+    .fire img {
+        scale: 0.6;
+        
+    }
 }
