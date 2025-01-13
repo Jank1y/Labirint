@@ -113,10 +113,14 @@ body {
   .labirint {
     scale: 0.6;
   }
-  .nav {
-    width: 300px;
+  .fire {
+    scale: 0.7;
+    position: relative;
+    bottom: 130px;
   }
-  .fire img {
-    scale: 0.6;
+  button {
+    position: relative;
+    bottom: 150px;
   }
+
 }
