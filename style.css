@@ -1,0 +1,46 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+.main {
+    background: url(Slike/background.webp) no-repeat center center;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav {
+    width: 485px;
+    height: 30px;
+    background: black;
+}
+
+.labirint {
+    background: white;
+    display: flex;
+}
+.fire img {
+    width: 350px;
+    height: 250px;
+}
+
+@media (max-width: 600px) {
+    .labirint {
+        scale: 0.6;
+    }
+    .nav {
+        width: 300px;
+    }
+}
