@@ -1,7 +1,7 @@
 function drawPolyline(
   svgElement,
   points,
-  strokeColor = "orange",
+  strokeColor = "",
   strokeWidth = 7
 ) {
   const polyline = document.createElementNS(
@@ -102,6 +102,17 @@ if (!svgElement) {
 
         if (progress < 1) {
           requestAnimationFrame(animateCharacter);
+        } else {
+          // Show SweetAlert when animation completes
+          Swal.fire({
+            title: 'Čestitke',
+            html: "<img src='Slike/firefighters.gif' style='width:350px;'>",
+            icon: 'info',
+            confirmButtonText: 'OK',
+            didOpen: () => {
+              document.body.classList.remove('swal2-height-auto');
+            }
+          });
         }
       }
       requestAnimationFrame(animateCharacter);
@@ -123,4 +134,39 @@ if (!svgElement) {
   } else {
     console.error('Erase button with ID "eraseButton" not found.');
   }
+}
+const info = document.getElementById("info");
+if (info) {
+  info.addEventListener("click", () => {
+    Swal.fire({
+      title: 'Gasilci v Labirintu',
+      text: "Gozd je zajel požar! Sirene tulijo, dim se dviga med krošnjami, a pot do ognja je zapletena – gozd je pravi labirint. Ekipa pogumnih gasilcev mora najti najhitrejšo pot skozi gosto rastje, podrta drevesa in skrivnostne poti, da pravočasno pride do požara. Spretno izbirajo smeri, premagujejo ovire in sledijo zvoku ognja. Vsaka sekunda šteje – ali jim bo uspelo rešiti gozd, preden bo prepozno?",
+      icon: 'warning',
+      confirmButtonText: 'OK',
+      didOpen: () => {
+        document.body.classList.remove('swal2-height-auto');
+      }
+    });
+  });
+}
+
+const vizitka = document.getElementById("vizitka");
+if (vizitka) {
+  vizitka.addEventListener("click", () => {
+    Swal.fire({
+      title: 'Vizitka',
+      html: `
+        <p><strong>Razvijalec:</strong> Jan Tavčar Kukanja</p>
+        <p><strong>Razred:</strong> 4.RB</p>
+        <p><strong>Mentor:</strong> Alen Andrlič</p>
+      `,
+      icon: 'info',
+      confirmButtonText: 'OK',
+      didOpen: () => {
+        document.body.classList.remove('swal2-height-auto');
+      }
+    });
+  });
+} else {
+  console.error("Element z ID 'vizitka' ne obstaja.");
 }

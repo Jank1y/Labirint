@@ -1,12 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Document</title>
 </head>
+
 <body>
+    <nav>
+        <button id="info">Zgodba</button>
+        <button id="animateButton">Pokliči Gasilce</button>
+        <div class="logo">
+            <img src="Slike/firefighters_logo.png">
+        </div>
+        <button id="eraseButton">Reset</button>
+        <button id="vizitka">Vizitka</button>
+    </nav>
     <div class="main">
         <div class="labirint">
             <svg id="mazeSvg" width="484" height="484" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -430,9 +442,8 @@
         <div class="fire">
             <img src="Slike/fire.gif">
         </div>
-        <button id="animateButton">Pokliči Gasilce</button>
-        <button id="eraseButton">Reset</button>
     </div>
     <script src="index.js"></script>
 </body>
+
 </html>

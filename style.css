@@ -8,119 +8,75 @@ html,
 body {
   width: 100%;
   height: 100%;
+  background: url(Slike/background.webp) no-repeat center center;
+  background-size: cover;
 }
 
 .main {
-  background: url(Slike/background.webp) no-repeat center center;
-  background-size: cover;
   width: 100%;
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-.nav {
-  width: 485px;
-  height: 30px;
-  background: black;
+nav {
+  display: flex;
+  width: 100%;
+  background: orangered;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+}
+
+nav button {
+  background: tomato;
+  border-radius: 5px;
+  padding: 5px;
+  color: white;
+  border-style: none;
+}
+nav .logo img {
+  height: 40px;
+  width: 40px;
+  background: white;
+}
+
+nav button:hover {
+  cursor: pointer;
+  scale: 1.1;
+  transition: 0.1s ease-in-out;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
 }
 
 .labirint {
-  background: white;
+  position: relative;
+  top: 20px;
+  background: linear-gradient(135deg, rgba(255, 94, 58, 0.9), rgba(255, 165, 0, 0.9), rgba(255, 223, 70, 0.9));
   display: flex;
 }
+
 .fire img {
   width: 350px;
   height: 250px;
-}
-/* CSS */
-#animateButton {
-  background: #ff4742;
-  border: 1px solid #ff4742;
-  border-radius: 6px;
-  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
-  box-sizing: border-box;
-  color: #ffffff;
-  cursor: pointer;
-  display: inline-block;
-  font-family: nunito, roboto, proxima-nova, "proxima nova", sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 16px;
-  min-height: 40px;
-  outline: 0;
-  padding: 12px 14px;
-  text-align: center;
-  text-rendering: geometricprecision;
-  text-transform: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-}
-
-#animateButton:hover,
-#animateButton:active {
-  background-color: initial;
-  background-position: 0 0;
-  color: #ff4742;
-}
-
-#animateButton:active {
-  opacity: 0.5;
-}
-/* CSS */
-#eraseButton {
-  background: #ff4742;
-  border: 1px solid #ff4742;
-  border-radius: 6px;
-  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
-  box-sizing: border-box;
-  color: #ffffff;
-  cursor: pointer;
-  display: inline-block;
-  font-family: nunito, roboto, proxima-nova, "proxima nova", sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 16px;
-  min-height: 40px;
-  outline: 0;
-  margin-top: 5px;
-  padding: 12px 14px;
-  text-align: center;
-  text-rendering: geometricprecision;
-  text-transform: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-}
-
-#eraseButton:hover,
-#eraseButton:active {
-  background-color: initial;
-  background-position: 0 0;
-  color: #ff4742;
-}
-
-#eraseButton:active {
-  opacity: 0.5;
 }
 
 @media (max-width: 600px) {
   .labirint {
     scale: 0.6;
   }
+
+  body {
+    height: auto;
+    overflow: hidden;
+  }
+
   .fire {
     scale: 0.7;
     position: relative;
-    bottom: 130px;
-  }
-  button {
-    position: relative;
-    bottom: 150px;
+    bottom: 120px;
   }
 
 }
