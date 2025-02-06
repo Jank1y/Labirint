@@ -1,9 +1,4 @@
-function drawPolyline(
-  svgElement,
-  points,
-  strokeColor = "",
-  strokeWidth = 7
-) {
+function drawPolyline(svgElement, points, strokeColor = "", strokeWidth = 7) {
   const polyline = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "polyline"
@@ -19,8 +14,44 @@ function drawPolyline(
   return polyline;
 }
 
-// Define the polyline points
-const polylinePoints = `
+// Initial setup for SVG elements
+const svgElement = document.getElementById("mazeSvg");
+
+if (!svgElement) {
+  console.error('SVG element with ID "mazeSvg" not found.');
+} else {
+  // Create the red dot (circle) character
+  let character = svgElement.querySelector("circle");
+  if (!character) {
+    character = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "circle"
+    );
+    character.setAttribute("r", 6); // Set the radius of the dot
+    character.setAttribute("fill", "red"); // Color of the dot
+    character.setAttribute("cx", 234); // Starting X position
+    character.setAttribute("cy", 5); // Starting Y position
+    svgElement.appendChild(character);
+  }
+
+  // Create the truck icon (hidden initially)
+  const truckIcon = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "image"
+  );
+  truckIcon.setAttributeNS(null, "href", "Slike/truck-front.png"); // Default icon
+  truckIcon.setAttribute("width", 24); // Icon width
+  truckIcon.setAttribute("height", 24); // Icon height
+  truckIcon.setAttribute("visibility", "hidden"); // Initially hidden
+  svgElement.appendChild(truckIcon);
+
+  // Position the truck icon at the start of the polyline (same position as the red dot)
+  const startPoint = { x: 234, y: 5 };
+  truckIcon.setAttribute("x", startPoint.x - 12); // Offset by half icon width
+  truckIcon.setAttribute("y", startPoint.y - 12); // Offset by half icon height
+
+  // Define the polyline points
+  const polylinePoints = `
     234,2 234,10 250,10 250,26 266,26 266,10 298,10 298,42 282,42 282,58 
     266,58 266,42 250,42 250,74 218,74 218,42 202,42 202,26 170,26 170,10 
     10,10 10,42 26,42 26,26 106,26 106,42 122,42 122,26 138,26 138,58 
@@ -33,39 +64,22 @@ const polylinePoints = `
     58,458 58,442 106,442 106,426 90,426 90,410 74,410 74,426 58,426 58,394 
     138,394 138,378 122,378 122,362 154,362 154,378 218,378 218,394 202,394 
     202,410 186,410 186,442 250,442 250,458 234,458 234,474 250,474 250,482
-`;
+  `;
 
-// Get the SVG element
-const svgElement = document.getElementById("mazeSvg");
-
-// Check if the SVG element exists
-if (!svgElement) {
-  console.error('SVG element with ID "mazeSvg" not found.');
-} else {
+  // Draw polyline
   const polyline = drawPolyline(svgElement, polylinePoints);
 
   const pathLength = polyline.getTotalLength();
   polyline.style.strokeDasharray = pathLength;
   polyline.style.strokeDashoffset = pathLength;
 
-  // Create an <image> element to replace the circle
-  const character = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "image"
-  );
-  character.setAttributeNS(null, "href", "Slike/truck-front.png"); // Default icon
-  character.setAttribute("width", 24); // Adjust icon size
-  character.setAttribute("height", 24); // Adjust icon size
-  svgElement.appendChild(character);
-
-  // Position the icon at the start of the polyline
-  const startPoint = polyline.getPointAtLength(0);
-  character.setAttribute("x", startPoint.x - 12); // Offset by half icon width
-  character.setAttribute("y", startPoint.y - 12); // Offset by half icon height
-
   const animateButton = document.getElementById("animateButton");
   if (animateButton) {
     animateButton.addEventListener("click", () => {
+      // Hide the red dot and show the truck icon when animation starts
+      character.setAttribute("visibility", "hidden");
+      truckIcon.setAttribute("visibility", "visible");
+
       polyline.style.transition = "none"; // Disable transition for dynamic updates
 
       let startTime;
@@ -73,7 +87,7 @@ if (!svgElement) {
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
 
-        const progress = Math.min(elapsed / 30000, 1); // Duration of 20s
+        const progress = Math.min(elapsed / 30000, 1); // Duration of 30s
         const currentLength = pathLength * progress;
 
         // Update the dash offset to create a disappearing trail
@@ -83,8 +97,8 @@ if (!svgElement) {
         const point = polyline.getPointAtLength(currentLength);
         const nextPoint = polyline.getPointAtLength(currentLength + 1);
 
-        character.setAttribute("x", point.x - 12); // Adjust icon position
-        character.setAttribute("y", point.y - 12); // Adjust icon position
+        truckIcon.setAttribute("x", point.x - 12); // Adjust icon position
+        truckIcon.setAttribute("y", point.y - 12); // Adjust icon position
 
         // Determine direction and switch icon
         if (nextPoint) {
@@ -93,10 +107,10 @@ if (!svgElement) {
 
           if (Math.abs(dx) > Math.abs(dy)) {
             // Moving horizontally
-            character.setAttributeNS(null, "href", "Slike/truck-side.png");
+            truckIcon.setAttributeNS(null, "href", "Slike/truck-side.png");
           } else {
             // Moving vertically
-            character.setAttributeNS(null, "href", "Slike/truck-front.png");
+            truckIcon.setAttributeNS(null, "href", "Slike/truck-front.png");
           }
         }
 
@@ -105,13 +119,13 @@ if (!svgElement) {
         } else {
           // Show SweetAlert when animation completes
           Swal.fire({
-            title: 'Čestitke',
+            title: "Čestitke",
             html: "<img src='Slike/firefighters.gif' style='width:350px;'>",
-            icon: 'info',
-            confirmButtonText: 'OK',
+            icon: "info",
+            confirmButtonText: "OK",
             didOpen: () => {
-              document.body.classList.remove('swal2-height-auto');
-            }
+              document.body.classList.remove("swal2-height-auto");
+            },
           });
         }
       }
@@ -127,9 +141,10 @@ if (!svgElement) {
       polyline.style.transition = "none";
       polyline.style.strokeDashoffset = pathLength;
 
-      character.setAttribute("x", startPoint.x - 12);
-      character.setAttribute("y", startPoint.y - 12);
-      character.setAttributeNS(null, "href", "Slike/truck-front.png"); // Reset to default icon
+      truckIcon.setAttribute("x", startPoint.x - 12);
+      truckIcon.setAttribute("y", startPoint.y - 12);
+      truckIcon.setAttribute("visibility", "hidden"); // Hide truck icon
+      character.setAttribute("visibility", "visible"); // Show red dot
     });
   } else {
     console.error('Erase button with ID "eraseButton" not found.');
@@ -139,13 +154,13 @@ const info = document.getElementById("info");
 if (info) {
   info.addEventListener("click", () => {
     Swal.fire({
-      title: 'Gasilci v Labirintu',
+      title: "Gasilci v Labirintu",
       text: "Gozd je zajel požar! Sirene tulijo, dim se dviga med krošnjami, a pot do ognja je zapletena – gozd je pravi labirint. Ekipa pogumnih gasilcev mora najti najhitrejšo pot skozi gosto rastje, podrta drevesa in skrivnostne poti, da pravočasno pride do požara. Spretno izbirajo smeri, premagujejo ovire in sledijo zvoku ognja. Vsaka sekunda šteje – ali jim bo uspelo rešiti gozd, preden bo prepozno?",
-      icon: 'warning',
-      confirmButtonText: 'OK',
+      icon: "warning",
+      confirmButtonText: "OK",
       didOpen: () => {
-        document.body.classList.remove('swal2-height-auto');
-      }
+        document.body.classList.remove("swal2-height-auto");
+      },
     });
   });
 }
@@ -154,19 +169,108 @@ const vizitka = document.getElementById("vizitka");
 if (vizitka) {
   vizitka.addEventListener("click", () => {
     Swal.fire({
-      title: 'Vizitka',
+      title: "Vizitka",
       html: `
         <p><strong>Razvijalec:</strong> Jan Tavčar Kukanja</p>
         <p><strong>Razred:</strong> 4.RB</p>
         <p><strong>Mentor:</strong> Alen Andrlič</p>
       `,
-      icon: 'info',
-      confirmButtonText: 'OK',
+      icon: "info",
+      confirmButtonText: "OK",
       didOpen: () => {
-        document.body.classList.remove('swal2-height-auto');
-      }
+        document.body.classList.remove("swal2-height-auto");
+      },
     });
   });
 } else {
   console.error("Element z ID 'vizitka' ne obstaja.");
 }
+document.addEventListener("DOMContentLoaded", function () {
+  const svg = document.getElementById("mazeSvg");
+  if (!svg) {
+    console.error('SVG element with ID "mazeSvg" not found.');
+    return;
+  }
+
+  // Define movement step size
+  const step = 5; // Adjust as needed
+
+  // Create or find the dot (circle) character
+  let character = svg.querySelector("circle");
+  if (!character) {
+    // Create a circle (dot) instead of an image
+    character = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "circle"
+    );
+    character.setAttribute("r", 6); // Set the radius of the dot (adjust size as needed)
+    character.setAttribute("fill", "red"); // Set the fill color (you can change it)
+    character.setAttribute("cx", 234); // Initial X position (centered)
+    character.setAttribute("cy", 5); // Initial Y position (centered)
+    svg.appendChild(character);
+  }
+
+  // Set initial position for the player (starting point)
+  let playerX = 234; // Change this to any start position inside your maze
+  let playerY = 5; // Change this to any start position inside your maze
+  character.setAttribute("cx", playerX); // Set the initial X position
+  character.setAttribute("cy", playerY); // Set the initial Y position
+
+  document.addEventListener("keydown", function (event) {
+    let newX = playerX;
+    let newY = playerY;
+
+    switch (event.key.toLowerCase()) {
+      case "w":
+        newY -= step;
+        break;
+      case "s":
+        newY += step;
+        break;
+      case "a":
+        newX -= step;
+        break;
+      case "d":
+        newX += step;
+        break;
+      default:
+        return; // Ignore other keys
+    }
+
+    // Check for collisions before updating position
+    if (!isWallCollision(newX, newY)) {
+      playerX = newX;
+      playerY = newY;
+      character.setAttribute("cx", playerX); // Update the X position
+      character.setAttribute("cy", playerY); // Update the Y position
+    }
+  });
+
+  // Function to check collision with any wall or obstacle in the maze
+  function isWallCollision(x, y) {
+    const playerRadius = parseFloat(character.getAttribute("r")); // Use circle radius for collision check
+
+    // Check if the character is inside any walls/obstacles
+    const walls = svg.querySelectorAll("path, rect, line"); // All maze walls (change to suit your SVG structure)
+
+    // Debug log to check if walls are being correctly fetched
+    console.log("Walls found: ", walls.length);
+
+    for (const wall of walls) {
+      const bbox = wall.getBBox(); // Bounding box of the wall
+
+      // Check if the player is colliding with the wall
+      if (
+        x + playerRadius > bbox.x &&
+        x - playerRadius < bbox.x + bbox.width &&
+        y + playerRadius > bbox.y &&
+        y - playerRadius < bbox.y + bbox.height
+      ) {
+        console.log("Collision detected with wall:", wall);
+        return true; // Collision detected
+      }
+    }
+
+    return false; // No collision
+  }
+});
