@@ -28,7 +28,7 @@ if (!svgElement) {
       "circle"
     );
     character.setAttribute("r", 6); // Set the radius of the dot
-    character.setAttribute("fill", "red"); // Color of the dot
+    character.setAttribute("fill", "blue"); // Color of the dot
     character.setAttribute("cx", 234); // Starting X position
     character.setAttribute("cy", 5); // Starting Y position
     svgElement.appendChild(character);
@@ -136,19 +136,24 @@ if (!svgElement) {
   }
 
   const eraseButton = document.getElementById("eraseButton");
-  if (eraseButton) {
-    eraseButton.addEventListener("click", () => {
-      polyline.style.transition = "none";
-      polyline.style.strokeDashoffset = pathLength;
+  eraseButton.addEventListener("click", () => {
+    polyline.style.transition = "none";
+    polyline.style.strokeDashoffset = pathLength;
 
-      truckIcon.setAttribute("x", startPoint.x - 12);
-      truckIcon.setAttribute("y", startPoint.y - 12);
-      truckIcon.setAttribute("visibility", "hidden"); // Hide truck icon
-      character.setAttribute("visibility", "visible"); // Show red dot
-    });
-  } else {
-    console.error('Erase button with ID "eraseButton" not found.');
-  }
+    // Resetiraj pozicijo tovornjaka
+    truckIcon.setAttribute("x", startPoint.x - 12);
+    truckIcon.setAttribute("y", startPoint.y - 12);
+    truckIcon.setAttribute("visibility", "hidden");
+
+    // Resetiraj pozicijo rdeče pike
+    character.setAttribute("cx", startPoint.x);
+    character.setAttribute("cy", startPoint.y);
+    character.setAttribute("visibility", "visible");
+
+    // Resetiraj koordinate igralca
+    playerX = startPoint.x;
+    playerY = startPoint.y;
+  });
 }
 const info = document.getElementById("info");
 if (info) {
@@ -192,85 +197,96 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  // Define movement step size
-  const step = 5; // Adjust as needed
+  const step = 2; // Smoother movement with a smaller step
+  const goalX = 250, goalY = 482; // Ciljna koordinata (zadnja točka poti)
 
-  // Create or find the dot (circle) character
   let character = svg.querySelector("circle");
   if (!character) {
-    // Create a circle (dot) instead of an image
-    character = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "circle"
-    );
-    character.setAttribute("r", 6); // Set the radius of the dot (adjust size as needed)
-    character.setAttribute("fill", "red"); // Set the fill color (you can change it)
-    character.setAttribute("cx", 234); // Initial X position (centered)
-    character.setAttribute("cy", 5); // Initial Y position (centered)
+    character = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    character.setAttribute("r", 6);
+    character.setAttribute("fill", "blue");
+    character.setAttribute("cx", 234);
+    character.setAttribute("cy", 5);
     svg.appendChild(character);
   }
 
-  // Set initial position for the player (starting point)
-  let playerX = 234; // Change this to any start position inside your maze
-  let playerY = 5; // Change this to any start position inside your maze
-  character.setAttribute("cx", playerX); // Set the initial X position
-  character.setAttribute("cy", playerY); // Set the initial Y position
+  let playerX = 234;
+  let playerY = 5;
+  character.setAttribute("cx", playerX);
+  character.setAttribute("cy", playerY);
 
-  document.addEventListener("keydown", function (event) {
-    let newX = playerX;
-    let newY = playerY;
+  let keys = {};
+  let animationFrameId;
 
-    switch (event.key.toLowerCase()) {
-      case "w":
-        newY -= step;
-        break;
-      case "s":
-        newY += step;
-        break;
-      case "a":
-        newX -= step;
-        break;
-      case "d":
-        newX += step;
-        break;
-      default:
-        return; // Ignore other keys
-    }
+  document.addEventListener("keydown", (event) => {
+    keys[event.key.toLowerCase()] = true;
+    if (!animationFrameId) moveCharacter();
+  });
 
-    // Check for collisions before updating position
-    if (!isWallCollision(newX, newY)) {
-      playerX = newX;
-      playerY = newY;
-      character.setAttribute("cx", playerX); // Update the X position
-      character.setAttribute("cy", playerY); // Update the Y position
+  document.addEventListener("keyup", (event) => {
+    delete keys[event.key.toLowerCase()];
+    if (Object.keys(keys).length === 0) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
     }
   });
 
-  // Function to check collision with any wall or obstacle in the maze
+  function moveCharacter() {
+    let newX = playerX;
+    let newY = playerY;
+
+    if (keys["w"]) newY -= step;
+    if (keys["s"]) newY += step;
+    if (keys["a"]) newX -= step;
+    if (keys["d"]) newX += step;
+
+    if (!isWallCollision(newX, newY)) {
+      playerX = newX;
+      playerY = newY;
+      character.setAttribute("cx", playerX);
+      character.setAttribute("cy", playerY);
+    }
+
+    if (isGoalReached(playerX, playerY)) {
+      showWinAlert(); // Prikaže obvestilo, ko igralec pride do cilja
+      return;
+    }
+
+    animationFrameId = requestAnimationFrame(moveCharacter);
+  }
+
   function isWallCollision(x, y) {
-    const playerRadius = parseFloat(character.getAttribute("r")); // Use circle radius for collision check
-
-    // Check if the character is inside any walls/obstacles
-    const walls = svg.querySelectorAll("path, rect, line"); // All maze walls (change to suit your SVG structure)
-
-    // Debug log to check if walls are being correctly fetched
-    console.log("Walls found: ", walls.length);
+    const playerRadius = parseFloat(character.getAttribute("r"));
+    const walls = svg.querySelectorAll("path, rect, line");
 
     for (const wall of walls) {
-      const bbox = wall.getBBox(); // Bounding box of the wall
-
-      // Check if the player is colliding with the wall
+      const bbox = wall.getBBox();
       if (
         x + playerRadius > bbox.x &&
         x - playerRadius < bbox.x + bbox.width &&
         y + playerRadius > bbox.y &&
         y - playerRadius < bbox.y + bbox.height
       ) {
-        console.log("Collision detected with wall:", wall);
-        return true; // Collision detected
+        return true;
       }
     }
+    return false;
+  }
 
-    return false; // No collision
+  function isGoalReached(x, y) {
+    const threshold = 5; // Dovoljena napaka v dosegu cilja
+    return Math.abs(x - goalX) < threshold && Math.abs(y - goalY) < threshold;
+  }
+
+  function showWinAlert() {
+    Swal.fire({
+      title: "Čestitke",
+      html: "<img src='Slike/firefighters.gif' style='width:350px;'>",
+      icon: "info",
+      confirmButtonText: "OK",
+      didOpen: () => {
+        document.body.classList.remove("swal2-height-auto");
+      },
+    });
   }
 });
